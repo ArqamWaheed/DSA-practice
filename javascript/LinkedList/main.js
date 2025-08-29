@@ -17,4 +17,5 @@ console.log(newList.toString());
 newList.pop();
 console.log(newList.toString());
 
-console.log(newList);
+newList.insertAt("giraf", 2);
+console.log(newList.toString());
