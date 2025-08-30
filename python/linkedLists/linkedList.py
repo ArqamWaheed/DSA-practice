@@ -15,7 +15,12 @@ class linkedList:
             self.myLinkedListPointers[index] = index + 1
         self.myLinkedListPointers[-1] = -1
     def __str__(self):
-        return f"{self.myLinkedList}"
+        stringToReturn = ""
+        if self.startPointer == self.nullPointer:     
+            for i in range(self.size - 1):
+                stringToReturn = f"{stringToReturn}({self.myLinkedList[i]}) --> "
+            return f"{stringToReturn}(None)"
+        return self.myLinkedList
 
     def find(self, itemSearch): 
         found = False
@@ -56,7 +61,5 @@ class linkedList:
         self.heapStartPointer = tempPointer
 
 LL = linkedList(3)
-LL.insert("gurt")
-LL.insert("YOmama")
-LL.delete("gurt")
+
 print(LL)
