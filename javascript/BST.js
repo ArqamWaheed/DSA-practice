@@ -246,6 +246,20 @@ function Tree(array = []) {
         })
         return isBalanced;
     }
+    this.rebalance = function() {
+        if (this.isBalanced()) return;
+        const arrayToBuild = [];
+        this.inOrderForEach((element) => {
+            arrayToBuild.push(element.data);
+        })
+        this.clearTree();
+        this.rootNode = this.buildTree(arrayToBuild);
+    }
+    this.clearTree = function() {
+        this.rootNode.left = null;
+        this.rootNode.right = null;
+        this.rootNode = null;
+    }
 }
 
 
@@ -259,3 +273,5 @@ newTree.insert(105);
 newTree.deleteItem(7);
 newTree.prettyPrint();
 console.log(newTree.isBalanced());
+newTree.rebalance();
+newTree.prettyPrint();
