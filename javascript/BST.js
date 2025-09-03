@@ -5,7 +5,7 @@ function Node(data) {
 }
 
 function Tree(array = []) {
-    this.rootNode = (function buildTree(Randomarray) {
+    this.buildTree = function (Randomarray) {
         let array = [...new Set(Randomarray)];
         array.sort((a, b) => a - b);
         let rootIndex = Math.floor(array.length / 2);    
@@ -28,9 +28,10 @@ function Tree(array = []) {
                 recurseAfter(newArray, newRootNode, newRootIndex);          
             }
         })(array, rootNode, rootIndex);
-
         return rootNode;
-    })(array);
+    }
+
+    this.rootNode = this.buildTree(array); 
 
     this.prettyPrint = function(node = this.rootNode, prefix = '', isLeft = true) {
         if (node === null) {
@@ -187,7 +188,27 @@ function Tree(array = []) {
         })([this.rootNode]);
     }
     this.height = function(value) {
-
+        try {
+            const rootNode = this.find(value);
+            let leftCount = heightOfSubtree([rootNode.left]);
+            let rightCount = heightOfSubtree([rootNode.right]);
+            function heightOfSubtree(queue, count = 0) { // Starting element node plz!
+                if (queue.length === 0) {
+                    return count;
+                }
+                const tempArr = [...queue];
+                tempArr.forEach((element) => {
+                    if (element.left !== null) queue.push(element.left);
+                    if (element.right !== null) queue.push(element.right);
+                    queue.splice(0, 1);
+                })
+                count += 1;
+                return heightOfSubtree(queue, count);
+            }
+            return leftCount > rightCount ? leftCount : rightCount;
+        } catch {
+            return null;
+        }
     }
     this.depth = function(value) {
         
@@ -202,3 +223,5 @@ const newTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 newTree.insert(3433);
 newTree.deleteItem(7);
 newTree.prettyPrint();
+newTree.inOrderForEach();
+console.log(newTree.height(67));
