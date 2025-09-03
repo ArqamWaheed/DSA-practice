@@ -44,49 +44,81 @@ function Tree(array = []) {
             this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
         }
     }
-    this.insert = function(traverseNode = this.rootNode, value) {
+
+    this.insert = function(value, traverseNode = this.rootNode) {
         if (this.rootNode === null) { // BAse case if tree does not exist!
             const nodeToAdd = new Node(value);
             this.rootNode = nodeToAdd;
             return;
         }
-
         if (value > traverseNode.data && traverseNode.right !== null) {
-            this.insert(traverseNode.right, value);
+            this.insert(value, traverseNode.right);
         } else if (value < traverseNode.data && traverseNode.left !== null) {
-            this.insert(traverseNode.left, value);
+            this.insert(value, traverseNode.left);
         } else if (value > traverseNode.data && traverseNode.right === null) {
             const nodeToAdd = new Node(value);
             traverseNode.right = nodeToAdd;
             return;
-        }
-        else if (value < traverseNode.data && traverseNode.left === null) {
+        } else if (value < traverseNode.data && traverseNode.left === null) {
             const nodeToAdd = new Node(value);
             traverseNode.left = nodeToAdd;
             return;
         }
-        
     }
-    this.deleteItem = function(traverseNode = this.rootNode, value) {
-        if (traverseNode === null) {
-            throw Error("Tree doesn't even exist!");
-        }
-        if (traverseNode.data !== null) {
-            if (value > this.rootNode.data) {
-                this.deleteItem(traverseNode.right, value);
-            } else if (value < this.rootNode.data) {
-                this.deleteItem(traverseNode.left, value);
-            } else if (value === this.rootNode.data) {
-                traverseNode.data = null;
+
+    this.deleteItem = function(value, traverseNode = this.rootNode) {
+        if (this.rootNode === null) { // BAse case if tree does not exist!
+            throw Error("Tree does not even exist..!");
+        } else if (traverseNode.data === value) { // Found the node with the value we need to delete
+            if (traverseNode.right !== null) {
+                const tempVal = traverseNode.right.data;
+                traverseNode.right.data = value;
+                traverseNode.data = tempVal;
+                if (traverseNode.right.left === null && traverseNode.right.right === null){
+                    traverseNode.right = null;// WE gotta end here gango
+                    return;
+                } 
+                this.deleteItem(value, traverseNode.right);
+                return;
+            } else if (traverseNode.left !== null) {
+                const tempVal = traverseNode.left.data;
+                traverseNode.left.data = value;
+                traverseNode.data = tempVal;
+                if (traverseNode.left.left === null && traverseNode.left.right === null){
+                    traverseNode.left = null;// WE gotta end here gango
+                    return;
+                } 
+                this.deleteItem(value, traverseNode.left); // Dont gotta end!
                 return;
             }
-        } else {
-            throw Error("Value does not exist gang!");
+        }
+        if (value > traverseNode.data && traverseNode.right !== null) { // Recursive traversals.
+            this.deleteItem(value, traverseNode.right);
+        } else if (value < traverseNode.data && traverseNode.left !== null) {
+            this.deleteItem(value, traverseNode.left);
+        } else if (value > traverseNode.data && traverseNode.right === null) { // ERror handling for a node that does not even exist
+            console.log(traverseNode);
+            throw Error("Node not found");
+        } else if (value < traverseNode.data && traverseNode.left === null) {
+            throw Error("Node not found");
         }
     }
 
-    this.find = function(value) {
-
+    this.find = function(value, traverseNode = this.rootNode) {
+        if (this.rootNode === null) { // BAse case if tree does not exist!
+            throw Error("Tree does not even exist..!");
+        } else if (traverseNode.data === value) { // Found the node we gotta return!;
+            return traverseNode;
+        }
+        if (value > traverseNode.data && traverseNode.right !== null) { // Recursive traversals.
+            return this.find(value, traverseNode.right);
+        } else if (value < traverseNode.data && traverseNode.left !== null) {
+            return this.find(value, traverseNode.left);
+        } else if (value > traverseNode.data && traverseNode.right === null) { // ERror handling for a node that does not even exist
+            throw Error("Node not found");
+        } else if (value < traverseNode.data && traverseNode.left === null) {
+            throw Error("Node not found");
+        }
     }
 
     this.levelOrderForEach = function(callback) { //  use an array acting as a queue to keep track of all the child nodes that you have yet to traverse and to add new ones to the list
@@ -113,7 +145,8 @@ function Tree(array = []) {
 }
 
 const newTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-console.log(newTree.prettyPrint());
-newTree.insert(undefined, 3433);
-console.log(newTree.prettyPrint());
+newTree.insert(3433);
+newTree.deleteItem(7);
+newTree.prettyPrint();
+console.log(newTree.find(23));
 
