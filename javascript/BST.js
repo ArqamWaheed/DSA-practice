@@ -189,9 +189,15 @@ function Tree(array = []) {
     }
     this.height = function(value) {
         try {
+            let leftCount = 0;
+            let rightCount = 0;
             const rootNode = this.find(value);
-            let leftCount = heightOfSubtree([rootNode.left]);
-            let rightCount = heightOfSubtree([rootNode.right]);
+            if (rootNode.left !== null){
+                leftCount = heightOfSubtree([rootNode.left]);
+            }
+            if (rootNode.right !== null){
+                rightCount = heightOfSubtree([rootNode.right]);
+            }
             function heightOfSubtree(queue, count = 0) { // Starting element node plz!
                 if (queue.length === 0) {
                     return count;
@@ -205,23 +211,51 @@ function Tree(array = []) {
                 count += 1;
                 return heightOfSubtree(queue, count);
             }
-            return leftCount > rightCount ? leftCount : rightCount;
+            return {
+                height: Math.max(leftCount, rightCount),
+                leftCount,
+                rightCount,
+            }
         } catch {
             return null;
         }
     }
-    this.depth = function(value) {
-        
+    this.depth = function(value, traverseNode = this.rootNode, count = 0) {
+        if (this.rootNode === null) { // BAse case if tree does not exist!
+            throw Error("Tree does not even exist..!");
+        } else if (traverseNode.data === value) { // Found the node we gotta return!;
+            return count;
+        }
+        if (value > traverseNode.data && traverseNode.right !== null) { // Recursive traversals.
+            count += 1;
+            return this.depth(value, traverseNode.right, count);
+        } else if (value < traverseNode.data && traverseNode.left !== null) {
+            count += 1;
+            return this.depth(value, traverseNode.left, count);
+        } else if (value > traverseNode.data && traverseNode.right === null) { // ERror handling for a node that does not even exist
+            throw Error("Node not found");
+        } else if (value < traverseNode.data && traverseNode.left === null) {
+            throw Error("Node not found");
+        }       
     }
     this.isBalanced = function() {
-        
+        let isBalanced = true;
+        this.levelOrderForEach((element) => {
+            const dataObj = this.height(element.data);
+            if (Math.abs(dataObj.leftCount - dataObj.rightCount) >= 2) isBalanced = false;
+        })
+        return isBalanced;
     }
 }
 
 
 const newTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 newTree.insert(3433);
+newTree.insert(101);
+newTree.insert(102);
+newTree.insert(103);
+newTree.insert(104);
+newTree.insert(105);
 newTree.deleteItem(7);
 newTree.prettyPrint();
-newTree.inOrderForEach();
-console.log(newTree.height(67));
+console.log(newTree.isBalanced());
