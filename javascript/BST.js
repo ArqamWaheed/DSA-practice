@@ -10,7 +10,6 @@ function Tree(array = []) {
         array.sort((a, b) => a - b);
         let rootIndex = Math.floor(array.length / 2);    
         let rootNode = new Node(array[rootIndex]);
-        console.log(array);
         (function recurseAfter(array, rootNode, rootIndex) {
             if (rootNode.left === null && rootIndex !== 0) {
                 const newArray = [...array];
@@ -46,32 +45,40 @@ function Tree(array = []) {
         }
     }
     this.insert = function(traverseNode = this.rootNode, value) {
-        if (traverseNode === null) {
-            this.rootNode.value = value;
+        if (this.rootNode === null) { // BAse case if tree does not exist!
+            const nodeToAdd = new Node(value);
+            this.rootNode = nodeToAdd;
             return;
         }
 
-        if (traverseNode.value !== null) {
-            if (value > this.rootNode.data) {
-                this.insert(traverseNode.right, value);
-            } else if (value < this.rootNode.data) {
-                this.insert(traverseNode.left, value);
-            }
-        } else {
-            traverseNode.value = value;
+        if (value > traverseNode.data && traverseNode.right !== null) {
+            this.insert(traverseNode.right, value);
+        } else if (value < traverseNode.data && traverseNode.left !== null) {
+            this.insert(traverseNode.left, value);
+        } else if (value > traverseNode.data && traverseNode.right === null) {
+            const nodeToAdd = new Node(value);
+            traverseNode.right = nodeToAdd;
             return;
         }
+        else if (value < traverseNode.data && traverseNode.left === null) {
+            const nodeToAdd = new Node(value);
+            traverseNode.left = nodeToAdd;
+            return;
+        }
+        
     }
     this.deleteItem = function(traverseNode = this.rootNode, value) {
         if (traverseNode === null) {
             throw Error("Tree doesn't even exist!");
         }
-
-        if (traverseNode.value !== null) {
+        if (traverseNode.data !== null) {
             if (value > this.rootNode.data) {
-                this.insert(traverseNode.right, value);
+                this.deleteItem(traverseNode.right, value);
             } else if (value < this.rootNode.data) {
-                this.insert(traverseNode.left, value);
+                this.deleteItem(traverseNode.left, value);
+            } else if (value === this.rootNode.data) {
+                traverseNode.data = null;
+                return;
             }
         } else {
             throw Error("Value does not exist gang!");
@@ -106,5 +113,7 @@ function Tree(array = []) {
 }
 
 const newTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-
+console.log(newTree.prettyPrint());
+newTree.insert(undefined, 3433);
+console.log(newTree.prettyPrint());
 
