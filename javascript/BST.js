@@ -97,7 +97,6 @@ function Tree(array = []) {
         } else if (value < traverseNode.data && traverseNode.left !== null) {
             this.deleteItem(value, traverseNode.left);
         } else if (value > traverseNode.data && traverseNode.right === null) { // ERror handling for a node that does not even exist
-            console.log(traverseNode);
             throw Error("Node not found");
         } else if (value < traverseNode.data && traverseNode.left === null) {
             throw Error("Node not found");
@@ -121,17 +120,71 @@ function Tree(array = []) {
         }
     }
 
-    this.levelOrderForEach = function(callback) { //  use an array acting as a queue to keep track of all the child nodes that you have yet to traverse and to add new ones to the list
-
+    this.levelOrderForEach = function(callback = function(element) {console.log(element.data);})  { //  use an array acting as a queue to keep track of all the child nodes that you have yet to traverse and to add new ones to the list
+        (function recurseThrough(queue) {
+            if (queue.length === 0) {
+                return;
+            }
+            const tempArr = [...queue];
+            tempArr.forEach((element) => {
+                if (element.left !== null) queue.push(element.left);
+                if (element.right !== null) queue.push(element.right);
+                callback(element);
+                queue.splice(0, 1);
+            })
+            return recurseThrough(queue);
+        })([this.rootNode]);
     }
-    this.inOrderForEach = function(callback) {
-
+    this.inOrderForEach = function(callback = function(element) {console.log(element.data);}) {
+        (function recurseThrough(stack) {
+            if (stack.length === 0) {
+                return;
+            }
+            if (stack[stack.length - 1].left !== null) {
+                stack.push(stack[stack.length - 1].left);
+                recurseThrough(stack);
+            };
+            callback(stack[stack.length - 1]);
+            if (stack[stack.length - 1].right !== null) {
+                stack.push(stack[stack.length - 1].right);
+                recurseThrough(stack);
+            };
+            stack.pop();
+        })([this.rootNode]);
     }
-    this.preOrderForEach = function(callback) {
-
+    this.preOrderForEach = function(callback = function(element) {console.log(element.data);}) {
+        (function recurseThrough(stack) {
+            if (stack.length === 0) {
+                return;
+            }
+            callback(stack[stack.length - 1]);
+            if (stack[stack.length - 1].left !== null) {
+                stack.push(stack[stack.length - 1].left);
+                recurseThrough(stack);
+            };
+            if (stack[stack.length - 1].right !== null) {
+                stack.push(stack[stack.length - 1].right);
+                recurseThrough(stack);
+            };
+            stack.pop();
+        })([this.rootNode]);
     }
-    this.postOrderForEach = function(callback) {
-
+    this.postOrderForEach = function(callback = function(element) {console.log(element.data);}) {
+        (function recurseThrough(stack) {
+            if (stack.length === 0) {
+                return;
+            }
+            if (stack[stack.length - 1].left !== null) {
+                stack.push(stack[stack.length - 1].left);
+                recurseThrough(stack);
+            };
+            if (stack[stack.length - 1].right !== null) {
+                stack.push(stack[stack.length - 1].right);
+                recurseThrough(stack);
+            };
+            callback(stack[stack.length - 1]);
+            stack.pop();
+        })([this.rootNode]);
     }
     this.height = function(value) {
 
@@ -144,9 +197,8 @@ function Tree(array = []) {
     }
 }
 
+
 const newTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 newTree.insert(3433);
 newTree.deleteItem(7);
 newTree.prettyPrint();
-console.log(newTree.find(23));
-
